@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synchronize — One Source of Truth for Chip Teams</title>
+    <meta name="description" content="A unified platform that integrates specs, communication, and project timelines for AI chip development teams.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-void: #000000;
+            --bg-deep: #030306;
+            --bg-surface: #0a0a0f;
+            --bg-elevated: #111116;
+            --bg-hover: #18181f;
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-medium: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #52525b;
+            --accent-electric: #00f0ff;
+            --accent-signal: #ff3366;
+            --accent-data: #a855f7;
+            --accent-success: #22c55e;
+            --accent-orange: #f97316;
+            --gradient-electric: linear-gradient(135deg, #00f0ff 0%, #0066ff 50%, #a855f7 100%);
+            --gradient-glow: radial-gradient(ellipse at 50% 0%, rgba(0, 240, 255, 0.15) 0%, transparent 50%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Instrument Sans', -apple-system, sans-serif;
+            background: var(--bg-void);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, transparent 100%);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-cta {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: 1px solid var(--border-medium);
+            color: var(--text-primary);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-cta:hover {
+            background: var(--text-primary);
+            color: var(--bg-void);
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 8rem 2rem 6rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        .hero-glow {
+            position: absolute;
+            top: -30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120%;
+            height: 80%;
+            background: var(--gradient-glow);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 .highlight {
+            background: var(--gradient-electric);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-sub {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .cta-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .email-form {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-medium);
+            border-radius: 12px;
+            padding: 0.375rem;
+            transition: all 0.3s ease;
+        }
+
+        .email-form:focus-within {
+            border-color: var(--accent-electric);
+            box-shadow: 0 0 0 4px rgba(0, 240, 255, 0.1);
+        }
+
+        .email-form input {
+            width: 280px;
+            padding: 0.875rem 1.25rem;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            font-family: inherit;
+        }
+
+        .email-form input::placeholder { color: var(--text-muted); }
+        .email-form input:focus { outline: none; }
+
+        .btn-primary {
+            padding: 0.875rem 1.75rem;
+            background: var(--text-primary);
+            border: none;
+            border-radius: 8px;
+            color: var(--bg-void);
+            font-size: 0.9375rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-note {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        /* Problem Section */
+        .problem-section {
+            padding: 8rem 0;
+            background: var(--bg-deep);
+        }
+
+        .section-eyebrow {
+            font-family: 'Instrument Sans', -apple-system, sans-serif;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent-electric);
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 2.75rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .section-desc {
+            font-size: 1.1875rem;
+            color: var(--text-secondary);
+            max-width: 560px;
+            line-height: 1.6;
+        }
+
+        /* Quote - 더 심플하게, 색상 수정 */
+        .quote-section {
+            margin-bottom: 4rem;
+        }
+
+        .quote-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            padding: 2rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            border-left: 3px solid var(--accent-electric);
+        }
+
+        .quote-text {
+            font-size: 1.1875rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+            flex: 1;
+        }
+
+        .quote-author {
+            margin-top: 1rem;
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+
+        .quote-author strong {
+            color: var(--accent-electric);
+        }
+
+        /* Pain Grid - 로고 크게, 다이나믹 효과 */
+        .pain-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 3rem;
+        }
+
+        .pain-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pain-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.03) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .pain-card:hover {
+            border-color: var(--border-medium);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .pain-card:hover::before {
+            opacity: 1;
+        }
+
+        .pain-card:hover .pain-logo {
+            transform: scale(1.1);
+        }
+
+        .pain-card:hover .pain-desc {
+            color: var(--accent-electric);
+        }
+
+        .pain-logo {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 14px;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .pain-logo svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .pain-title {
+            font-size: 1.0625rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .pain-desc {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+        }
+
+        /* Stats - Problem 섹션 내부에 inline으로 */
+        .stats-inline {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4rem;
+            margin-top: 4rem;
+            padding-top: 4rem;
+        }
+
+        .stat-inline {
+            text-align: center;
+        }
+
+        .stat-divider {
+            width: 1px;
+            height: 80px;
+            background: var(--border-medium);
+        }
+
+        .stat-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 600;
+            background: var(--gradient-electric);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 280px;
+            white-space: nowrap;
+        }
+
+        .stats-source {
+            text-align: center;
+            margin-top: 2rem;
+            padding-bottom: 2rem;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+        }
+
+        /* Solution Section - 데모 이미지만 보여주기 */
+        .solution-section {
+            padding: 8rem 0;
+            background: var(--bg-deep);
+        }
+
+        .solution-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        /* Demo Preview */
+        .demo-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .demo-browser {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-medium);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 
+                0 0 80px rgba(0, 240, 255, 0.08),
+                0 40px 80px rgba(0, 0, 0, 0.5);
+        }
+
+        .demo-browser-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.25rem;
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .demo-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .demo-dot.red { background: #ff5f57; }
+        .demo-dot.yellow { background: #ffbd2e; }
+        .demo-dot.green { background: #28ca41; }
+
+        .demo-url {
+            flex: 1;
+            margin-left: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-surface);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .demo-content {
+            background: #f8fafc;
+            padding: 0;
+        }
+
+        /* 실제 대시보드 UI */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            min-height: 500px;
+            background: #ffffff;
+        }
+
+        .dashboard-sidebar {
+            background: #f1f5f9;
+            padding: 1.25rem;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 0.875rem;
+            color: #0f172a;
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-logo-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .sidebar-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-label {
+            font-size: 0.625rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8125rem;
+            color: #475569;
+        }
+
+        .sidebar-item.active {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .sidebar-item-icon {
+            font-size: 0.875rem;
+        }
+
+        .sidebar-badge {
+            margin-left: auto;
+            background: #ef4444;
+            color: white;
+            font-size: 0.625rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 10px;
+        }
+
+        .dashboard-main {
+            padding: 1.5rem 2rem;
+            overflow: hidden;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.25rem;
+        }
+
+        .project-meta {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-ai {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.5rem 0.875rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .btn-ai::before {
+            content: '✦';
+        }
+
+        .btn-share {
+            padding: 0.5rem 0.875rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Timeline */
+        .timeline-section {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .timeline-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .timeline-title-icon {
+            color: #3b82f6;
+        }
+
+        .timeline-meta {
+            font-size: 0.6875rem;
+            color: #94a3b8;
+        }
+
+        .timeline-months {
+            display: grid;
+            grid-template-columns: 120px repeat(10, 1fr);
+            gap: 0;
+            font-size: 0.625rem;
+            color: #94a3b8;
+            margin-bottom: 0.75rem;
+            padding-left: 0;
+        }
+
+        .timeline-months span:first-child {
+            visibility: hidden;
+        }
+
+        .timeline-row {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-task {
+            font-size: 0.75rem;
+            color: #334155;
+        }
+
+        .timeline-task-sub {
+            font-size: 0.625rem;
+            color: #94a3b8;
+        }
+
+        .timeline-bar-container {
+            position: relative;
+            height: 24px;
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        .timeline-bar {
+            position: absolute;
+            height: 100%;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.625rem;
+            color: white;
+            font-weight: 500;
+        }
+
+        .timeline-bar.blue { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .timeline-bar.cyan { background: linear-gradient(90deg, #06b6d4, #22d3ee); }
+        .timeline-bar.orange { background: linear-gradient(90deg, #f97316, #fb923c); }
+        .timeline-bar.purple { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+        .timeline-bar.green { background: linear-gradient(90deg, #22c55e, #4ade80); }
+
+        .timeline-legend {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.75rem;
+            font-size: 0.625rem;
+            color: #64748b;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.blue { background: #3b82f6; }
+        .legend-dot.orange { background: #f97316; }
+        .legend-dot.green { background: #22c55e; }
+
+        /* Discussions */
+        .discussions-section {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .discussions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .discussions-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .btn-new-thread {
+            padding: 0.375rem 0.75rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.6875rem;
+            font-weight: 500;
+        }
+
+        .discussion-item {
+            padding: 0.875rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 3px solid #22c55e;
+        }
+
+        .discussion-topic {
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: #0f172a;
+            margin-bottom: 0.375rem;
+        }
+
+        .discussion-tags {
+            display: flex;
+            gap: 0.375rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tag {
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.625rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .tag.feature { background: #dbeafe; color: #2563eb; }
+        .tag.high { background: #fee2e2; color: #dc2626; }
+
+        .discussion-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.625rem;
+            color: #64748b;
+        }
+
+        .status-resolved {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: #22c55e;
+        }
+
+        /* Features - 3개 */
+        .features-section {
+            padding: 6rem 0;
+            background: var(--bg-void);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--border-medium);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-electric);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-card:hover::before { opacity: 1; }
+
+        .feature-icon-wrap {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+            border-radius: 12px;
+        }
+
+        .feature-icon-wrap svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .feature-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-desc {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Final CTA */
+        .cta-section {
+            padding: 8rem 0;
+            text-align: center;
+            position: relative;
+            background: var(--bg-deep);
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150%;
+            height: 100%;
+            background: radial-gradient(ellipse at 50% 0%, rgba(0, 240, 255, 0.08) 0%, transparent 60%);
+        }
+
+        .cta-content { position: relative; z-index: 1; }
+
+        .cta-title {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .cta-title .highlight {
+            background: var(--gradient-electric);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cta-sub {
+            font-size: 1.0625rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .cta-form-final {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-medium);
+            border-radius: 12px;
+            padding: 0.375rem;
+            max-width: 440px;
+            margin: 0 auto 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .cta-form-final:focus-within {
+            border-color: var(--accent-electric);
+            box-shadow: 0 0 0 4px rgba(0, 240, 255, 0.1);
+        }
+
+        .cta-form-final input {
+            flex: 1;
+            padding: 0.875rem 1.25rem;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            font-family: inherit;
+        }
+
+        .cta-form-final input::placeholder { color: var(--text-muted); }
+        .cta-form-final input:focus { outline: none; }
+
+        .cta-form-final button {
+            padding: 0.875rem 1.5rem;
+            background: var(--gradient-electric);
+            border: none;
+            border-radius: 8px;
+            color: var(--bg-void);
+            font-size: 0.875rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .cta-form-final button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+        }
+
+        /* Footer */
+        footer {
+            padding: 2rem;
+            border-top: 1px solid var(--border-subtle);
+            background: var(--bg-void);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover { color: var(--text-primary); }
+
+        .footer-copy {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        /* Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .pain-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-inline { flex-direction: column; gap: 2rem; }
+            .stat-divider { width: 80px; height: 1px; }
+            .stat-label { white-space: normal; }
+            .features-grid { grid-template-columns: 1fr; }
+            .dashboard { grid-template-columns: 1fr; }
+            .dashboard-sidebar { display: none; }
+        }
+
+        @media (max-width: 640px) {
+            nav { padding: 1rem; }
+            .hero { padding: 7rem 1rem 4rem; }
+            .email-form { flex-direction: column; border-radius: 12px; padding: 0.5rem; }
+            .email-form input { width: 100%; text-align: center; }
+            .pain-grid { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+            .footer-content { flex-direction: column; gap: 1rem; text-align: center; }
+            .cta-form-final { flex-direction: column; border-radius: 12px; padding: 0.5rem; }
+            .cta-form-final input { text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">synchronize</div>
+        <a href="#waitlist" class="nav-cta">Get Early Access</a>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-glow"></div>
+        
+        <div class="hero-content">
+            <h1>
+                When Specs Change,<br>
+                <span class="highlight">Every Team Knows Instantly.</span>
+            </h1>
+            
+            <p class="hero-sub">
+                One source of truth that integrates specs, communication, and project timelines for chip development teams.
+            </p>
+            
+            <div class="cta-group">
+                <form class="email-form" action="https://tally.so/r/obey1P" method="GET" target="_blank">
+                    <input type="email" name="email" placeholder="Enter your work email" required>
+                    <button type="submit" class="btn-primary">Join Waitlist</button>
+                </form>
+                <p class="cta-note">Join teams waiting for early access</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem-section">
+        <div class="container">
+            <!-- Quote -->
+            <div class="quote-section reveal">
+                <div class="quote-card">
+                    <div>
+                        <p class="quote-text">
+                            Broadcasting a fix to 200+ engineers manually... and there's simply no 'Source of Truth' for who saw it, who implemented it, or what the original reasoning was.
+                        </p>
+                        <p class="quote-author">— SoC Design Engineer at <strong>Mobilint</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reveal">
+                <span class="section-eyebrow">The Problem</span>
+                <h2 class="section-title">Your specs are scattered everywhere.<br>Decisions live in none.</h2>
+                <p class="section-desc" style="white-space: nowrap;">
+                    A single miscommunicated spec change costs $10M+ in silicon respins.
+                </p>
+            </div>
+
+            <!-- Pain Grid -->
+            <div class="pain-grid reveal">
+                <div class="pain-card">
+                    <div class="pain-logo">
+                        <!-- Slack Logo -->
+                        <svg viewBox="0 0 128 128">
+                            <path d="M27.255 80.719c0 7.33-5.978 13.317-13.309 13.317C6.616 94.036.63 88.049.63 80.719s5.987-13.317 13.317-13.317h13.309zm6.709 0c0-7.33 5.987-13.317 13.317-13.317s13.317 5.986 13.317 13.317v33.335c0 7.33-5.986 13.317-13.317 13.317-7.33 0-13.317-5.987-13.317-13.317zm0 0" fill="#e01e5a"/>
+                            <path d="M47.281 27.255c-7.33 0-13.317-5.978-13.317-13.309C33.964 6.616 39.951.63 47.281.63s13.317 5.987 13.317 13.317v13.309zm0 6.709c7.33 0 13.317 5.987 13.317 13.317s-5.986 13.317-13.317 13.317H13.946C6.616 60.598.63 54.612.63 47.281c0-7.33 5.987-13.317 13.317-13.317zm0 0" fill="#36c5f0"/>
+                            <path d="M100.745 47.281c0-7.33 5.978-13.317 13.309-13.317 7.33 0 13.317 5.987 13.317 13.317s-5.987 13.317-13.317 13.317h-13.309zm-6.709 0c0 7.33-5.987 13.317-13.317 13.317s-13.317-5.986-13.317-13.317V13.946C67.402 6.616 73.388.63 80.719.63c7.33 0 13.317 5.987 13.317 13.317zm0 0" fill="#2eb67d"/>
+                            <path d="M80.719 100.745c7.33 0 13.317 5.978 13.317 13.309 0 7.33-5.987 13.317-13.317 13.317s-13.317-5.987-13.317-13.317v-13.309zm0-6.709c-7.33 0-13.317-5.987-13.317-13.317s5.986-13.317 13.317-13.317h33.335c7.33 0 13.317 5.986 13.317 13.317 0 7.33-5.987 13.317-13.317 13.317zm0 0" fill="#ecb22e"/>
+                        </svg>
+                    </div>
+                    <h3 class="pain-title">Slack</h3>
+                    <p class="pain-desc">Decisions disappear</p>
+                </div>
+                <div class="pain-card">
+                    <div class="pain-logo">
+                        <!-- Notion Logo - 흰색 버전 -->
+                        <svg viewBox="0 0 100 100" fill="none">
+                            <path d="M6.017 4.313l55.333-4.087c6.797-.583 8.543-.19 12.817 2.917l17.663 12.443c2.913 2.14 3.883 2.723 3.883 5.053v68.243c0 4.277-1.553 6.807-6.99 7.193L24.467 99.967c-4.08.193-6.023-.39-8.16-3.113L3.3 79.94c-2.333-3.113-3.3-5.443-3.3-8.167V11.113c0-3.497 1.553-6.413 6.017-6.8z" fill="rgba(255,255,255,0.1)"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M61.35.227l-55.333 4.087C1.553 4.7 0 7.617 0 11.113v60.66c0 2.723.967 5.053 3.3 8.167l13.007 16.913c2.137 2.723 4.08 3.307 8.16 3.113l64.257-3.89c5.437-.387 6.99-2.917 6.99-7.193V20.64c0-2.21-.873-2.847-3.443-4.733L74.167 3.143C69.893.027 68.147-.367 61.35.227zM25.663 21.56c-5.61.363-6.89.44-10.077-2.153l-7.89-6.223c-.83-.76-.387-1.713 1.167-1.907l53.22-3.84c4.467-.387 6.8 1.167 8.54 2.527l9.123 6.61c.39.193.97 1.357 0 1.357l-55.25 3.243-.833.387zm-6.03 75.187V30.86c0-2.723.777-3.89 3.5-4.083l61.79-3.563c2.527-.193 3.69 1.36 3.69 4.083v65.307c0 2.723-.487 5.053-4.86 5.247l-59.07 3.403c-4.373.193-5.05-1.357-5.05-4.507zm58.1-63.56c.39 1.75 0 3.5-1.75 3.697l-2.917.557v48.417c-2.527 1.36-4.86 2.14-6.797 2.14-3.11 0-3.89-.97-6.22-3.887l-19.03-29.893v28.927l6.023 1.36s0 3.5-4.857 3.5l-13.397.777c-.39-.78 0-2.723 1.357-3.11l3.5-.97V37.283l-4.857-.39c-.39-2.143 1.163-3.7 3.103-3.89l14.367-.97 19.8 30.28V34.947l-5.053-.583c-.39-2.143 1.163-3.7 3.103-3.89l13.43-.777z" fill="#fff"/>
+                        </svg>
+                    </div>
+                    <h3 class="pain-title">Notion</h3>
+                    <p class="pain-desc">No traceability</p>
+                </div>
+                <div class="pain-card">
+                    <div class="pain-logo">
+                        <!-- Excel Logo -->
+                        <svg viewBox="0 0 96 96">
+                            <path fill="#21a366" d="M58 0H96v96H58z"/>
+                            <path fill="#107c41" d="M0 16L58 6v84L0 80z"/>
+                            <path fill="#fff" d="M68 24h18v8H68zM68 40h18v8H68zM68 56h18v8H68zM68 72h18v8H68z"/>
+                            <path fill="#fff" d="M14 28l7.5 20L14 68h9l4.5-13.5L32 68h9L33.5 48 41 28h-9l-4.5 13.5L23 28z"/>
+                        </svg>
+                    </div>
+                    <h3 class="pain-title">Excel</h3>
+                    <p class="pain-desc">Version chaos</p>
+                </div>
+                <div class="pain-card">
+                    <div class="pain-logo">
+                        <!-- Jira Logo - 정확한 버전 -->
+                        <svg viewBox="0 0 256 256">
+                            <defs>
+                                <linearGradient id="jira-blue-1" x1="99.68%" y1="15.85%" x2="39.6%" y2="60.14%">
+                                    <stop offset="0%" stop-color="#0052CC"/>
+                                    <stop offset="100%" stop-color="#2684FF"/>
+                                </linearGradient>
+                                <linearGradient id="jira-blue-2" x1="0.59%" y1="84.78%" x2="60.33%" y2="40.62%">
+                                    <stop offset="0%" stop-color="#0052CC"/>
+                                    <stop offset="100%" stop-color="#2684FF"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M244.658 0H121.707a55.502 55.502 0 0 0 55.502 55.502h22.649V77.37c.02 30.625 24.841 55.447 55.466 55.466V10.666A10.666 10.666 0 0 0 244.658 0" fill="#2684FF"/>
+                            <path d="M183.822 61.262H60.872c.019 30.625 24.84 55.447 55.466 55.466h22.649v21.868c.02 30.597 24.798 55.408 55.39 55.466V71.928a10.666 10.666 0 0 0-10.555-10.666" fill="url(#jira-blue-1)"/>
+                            <path d="M122.951 122.489H0c0 30.653 24.85 55.502 55.502 55.502h22.72v21.796c.02 30.625 24.841 55.447 55.466 55.466V133.156a10.666 10.666 0 0 0-10.737-10.667" fill="url(#jira-blue-2)"/>
+                        </svg>
+                    </div>
+                    <h3 class="pain-title">Jira</h3>
+                    <p class="pain-desc">Software-centric</p>
+                </div>
+            </div>
+
+            <!-- Stats inline -->
+            <div class="stats-inline reveal">
+                <div class="stat-inline">
+                    <div class="stat-number" data-target="86">0%</div>
+                    <p class="stat-label">of chip designs require at least one respin</p>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-inline">
+                    <div class="stat-number" data-target="700" data-prefix="$" data-suffix="M+">$0M+</div>
+                    <p class="stat-label">average AI chip development cost</p>
+                </div>
+            </div>
+            <p class="stats-source reveal">Source: Siemens EDA, Wilson Research Group</p>
+        </div>
+    </section>
+
+    <!-- Solution - Demo Only -->
+    <section class="solution-section">
+        <div class="container">
+            <div class="solution-header reveal">
+                <span class="section-eyebrow">The Solution</span>
+                <h2 class="section-title">One platform. Complete alignment.</h2>
+                <p class="section-desc" style="text-align: center; margin: 0 auto;">
+                    Replace fragmented tools with a single source of truth.
+                </p>
+            </div>
+
+            <div class="demo-container reveal">
+                <div class="demo-browser">
+                    <div class="demo-browser-header">
+                        <span class="demo-dot red"></span>
+                        <span class="demo-dot yellow"></span>
+                        <span class="demo-dot green"></span>
+                        <div class="demo-url">app.synchronize.dev/YOLOv1_Support</div>
+                    </div>
+                    <div class="demo-content">
+                        <div class="dashboard">
+                            <div class="dashboard-sidebar">
+                                <div class="sidebar-logo">
+                                    <div class="sidebar-logo-icon">S</div>
+                                    <span>Synchronize</span>
+                                </div>
+                                
+                                <div class="sidebar-section">
+                                    <div class="sidebar-label">Workspace</div>
+                                    <div class="sidebar-item active">
+                                        <span class="sidebar-item-icon">📊</span>
+                                        Dashboard
+                                    </div>
+                                    <div class="sidebar-item">
+                                        <span class="sidebar-item-icon">📁</span>
+                                        Projects
+                                    </div>
+                                    <div class="sidebar-item">
+                                        <span class="sidebar-item-icon">💬</span>
+                                        Discussions
+                                        <span class="sidebar-badge">3</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="sidebar-section">
+                                    <div class="sidebar-label">YOLOv1_Support</div>
+                                    <div class="sidebar-item">
+                                        <span class="sidebar-item-icon">📋</span>
+                                        Requirements
+                                    </div>
+                                    <div class="sidebar-item">
+                                        <span class="sidebar-item-icon">🔧</span>
+                                        Design & Verification
+                                    </div>
+                                </div>
+                                
+                                <div class="sidebar-section">
+                                    <div class="sidebar-item" style="color: #8b5cf6;">
+                                        <span class="sidebar-item-icon">✦</span>
+                                        AI Chief of Staff
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="dashboard-main">
+                                <div class="main-header">
+                                    <div>
+                                        <div class="project-title">YOLOv1_Support</div>
+                                        <div class="project-meta">AI Chip Design & Validation • Active since Jan 2026</div>
+                                    </div>
+                                    <div class="header-actions">
+                                        <button class="btn-ai">AI Chief of Staff Active</button>
+                                        <button class="btn-share">Share Project</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-section">
+                                    <div class="timeline-header">
+                                        <div class="timeline-title">
+                                            <span class="timeline-title-icon">📅</span>
+                                            Project Timeline
+                                        </div>
+                                        <div class="timeline-meta">Jan 2026 - Oct 2026 • 8 Team Members</div>
+                                    </div>
+                                    
+                                    <div class="timeline-months">
+                                        <span></span>
+                                        <span>Jan</span>
+                                        <span>Feb</span>
+                                        <span>Mar</span>
+                                        <span>Apr</span>
+                                        <span>May</span>
+                                        <span>Jun</span>
+                                        <span>Jul</span>
+                                        <span>Aug</span>
+                                        <span>Sep</span>
+                                        <span>Oct</span>
+                                    </div>
+                                    
+                                    <div class="timeline-row">
+                                        <div>
+                                            <div class="timeline-task">IP Integration</div>
+                                            <div class="timeline-task-sub">Design • Apr 2026</div>
+                                        </div>
+                                        <div class="timeline-bar-container">
+                                            <div class="timeline-bar blue" style="left: 0%; width: 40%;">65%</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="timeline-row">
+                                        <div>
+                                            <div class="timeline-task">HW-SW Co-Design</div>
+                                            <div class="timeline-task-sub">Verification • Jun 2026</div>
+                                        </div>
+                                        <div class="timeline-bar-container">
+                                            <div class="timeline-bar cyan" style="left: 30%; width: 35%;"></div>
+                                            <div class="timeline-bar orange" style="left: 45%; width: 20%;">60%</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="timeline-row">
+                                        <div>
+                                            <div class="timeline-task">RTL Verification</div>
+                                            <div class="timeline-task-sub">Verification • Jul 2026</div>
+                                        </div>
+                                        <div class="timeline-bar-container">
+                                            <div class="timeline-bar orange" style="left: 50%; width: 25%;">40%</div>
+                                            <div class="timeline-bar green" style="left: 60%; width: 20%;"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="timeline-row">
+                                        <div>
+                                            <div class="timeline-task">Timing Closure</div>
+                                            <div class="timeline-task-sub">Implementation • Aug 2026</div>
+                                        </div>
+                                        <div class="timeline-bar-container">
+                                            <div class="timeline-bar purple" style="left: 70%; width: 20%;">15%</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="timeline-legend">
+                                        <div class="legend-item"><span class="legend-dot blue"></span> On Track</div>
+                                        <div class="legend-item"><span class="legend-dot orange"></span> At Risk</div>
+                                        <div class="legend-item"><span class="legend-dot green"></span> Completed</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="discussions-section">
+                                    <div class="discussions-header">
+                                        <div class="discussions-title">
+                                            <span>💬</span>
+                                            Discussions
+                                        </div>
+                                        <button class="btn-new-thread">New Thread</button>
+                                    </div>
+                                    
+                                    <div class="discussion-item">
+                                        <div class="discussion-topic">Thermal Issue Resolved – Frequency: 2.5GHz</div>
+                                        <div class="discussion-tags">
+                                            <span class="tag feature">feature/thermal-optimization</span>
+                                            <span class="tag high">high</span>
+                                        </div>
+                                        <div class="discussion-meta">
+                                            <span class="status-resolved">✓ Resolved</span>
+                                            <span>12 comments</span>
+                                            <span>2h ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features - 3개 -->
+    <section class="features-section">
+        <div class="container">
+            <div class="features-grid reveal">
+                <div class="feature-card">
+                    <div class="feature-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="url(#feat-1)" stroke-width="1.5">
+                            <defs>
+                                <linearGradient id="feat-1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#00f0ff"/>
+                                    <stop offset="100%" style="stop-color:#a855f7"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M9 12h6M12 9v6M3 12a9 9 0 1018 0 9 9 0 00-18 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Real-time Spec Sync</h3>
+                    <p class="feature-desc">
+                        When a spec changes, every dependent team sees it immediately—with context on what changed and why.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="url(#feat-2)" stroke-width="1.5">
+                            <defs>
+                                <linearGradient id="feat-2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#00f0ff"/>
+                                    <stop offset="100%" style="stop-color:#a855f7"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M12 8v4l3 3M3 12a9 9 0 1018 0 9 9 0 00-18 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Decision History</h3>
+                    <p class="feature-desc">
+                        Never lose the "why" again. Every decision is captured with full context, owner, and timestamp.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="url(#feat-3)" stroke-width="1.5">
+                            <defs>
+                                <linearGradient id="feat-3" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#00f0ff"/>
+                                    <stop offset="100%" style="stop-color:#a855f7"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">AI Chief of Staff</h3>
+                    <p class="feature-desc">
+                        An AI agent that understands your workflows—answers questions, surfaces risks, and keeps everyone aligned.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="cta-section" id="waitlist">
+        <div class="container">
+            <div class="cta-content reveal">
+                <h2 class="cta-title">
+                    Stop Losing Decisions.<br>
+                    <span class="highlight">Start Synchronizing.</span>
+                </h2>
+                <p class="cta-sub">
+                    Join chip teams building the future of hardware collaboration.
+                </p>
+                <form class="cta-form-final" action="https://tally.so/r/obey1P" method="GET" target="_blank">
+                    <input type="email" name="email" placeholder="Enter your work email" required>
+                    <button type="submit">Get Early Access</button>
+                </form>
+                <p class="cta-note">No spam. We'll reach out when your spot is ready.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="logo">synchronize</div>
+            <p class="footer-copy">© 2025 Synchronize. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+
+        // Number counter animation
+        function animateNumber(el, target, prefix = '', suffix = '') {
+            const duration = 2000;
+            const start = 0;
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(start + (target - start) * easeOut);
+                el.textContent = prefix + current + suffix;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            requestAnimationFrame(update);
+        }
+
+        // Scroll reveal + number animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // Trigger number animations
+                    const statNumbers = entry.target.querySelectorAll('.stat-number[data-target]');
+                    statNumbers.forEach(el => {
+                        if (!el.dataset.animated) {
+                            el.dataset.animated = 'true';
+                            const target = parseInt(el.dataset.target);
+                            const prefix = el.dataset.prefix || '';
+                            const suffix = el.dataset.suffix || '%';
+                            animateNumber(el, target, prefix, suffix);
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
